@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📱 智能通讯录管理系统</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         * {
             margin: 0;
@@ -561,34 +560,6 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
-
-        /* 新增样式：测试按钮 */
-        .search-box-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-
-        .test-search-btn {
-            padding: 12px 20px;
-            background: #9b59b6;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .test-search-btn:hover {
-            background: #8e44ad;
-            transform: translateY(-2px);
-        }
     </style>
 </head>
 <body>
@@ -685,15 +656,9 @@
                 <h2 class="section-title"><i class="fas fa-list"></i> 联系人列表</h2>
                 
                 <div class="controls">
-                    <div class="search-box-container">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="搜索姓名或联系方式..." oninput="searchContacts()">
-                        </div>
-                        <!-- 在这里添加测试按钮 -->
-                        <button class="test-search-btn" onclick="testSearch()">
-                            <i class="fas fa-vial"></i> 测试搜索
-                        </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="搜索姓名或联系方式..." oninput="searchContacts()">
                     </div>
                     <div class="filter-buttons">
                         <button class="filter-btn active" onclick="filterContacts('all')">全部</button>
@@ -751,46 +716,69 @@
     </div>
 
     <script>
-        // ==================== 配置 ====================
+        // API基础地址 - 重要：根据你的部署环境修改这个地址
         const API_BASE = 'http://localhost:5000';
-        const DEBUG_MODE = true;
         
-        // ==================== 全局变量 ====================
         let editingId = null;
         let currentFilter = 'all';
         let allContacts = [];
-        let isSubmitting = false;
-        let eventsBound = false;
-        
-        // ==================== 工具函数 ====================
-        function debugLog(...args) {
-            if (DEBUG_MODE) {
-                console.log('[DEBUG]', ...args);
-            }
-        }
-        
-        function safeGetElement(id) {
-            const element = document.getElementById(id);
-            if (!element) {
-                console.error(`找不到元素: #${id}`);
-            }
-            return element;
-        }
-        
-        // ==================== 消息显示 ====================
-        function showMessage(message, type = 'success') {
-            const messageDiv = safeGetElement('message');
-            if (!messageDiv) return;
+
+        // 等待页面完全加载
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始初始化...');
+            initializeApp();
+        });
+
+        function initializeApp() {
+            console.log('初始化应用...');
             
-            const iconMap = {
-                success: 'check-circle',
-                error: 'exclamation-circle',
-                info: 'info-circle'
-            };
+            // 检查必要的DOM元素
+            const requiredElements = ['message', 'contactList', 'contactForm'];
+            for (const id of requiredElements) {
+                if (!document.getElementById(id)) {
+                    console.error(`缺少必要的元素: #${id}`);
+                }
+            }
+            
+            // 加载联系人
+            loadContacts();
+            
+            // 绑定表单提交事件
+            const form = document.getElementById('contactForm');
+            if (form) {
+                form.addEventListener('submit', handleSubmit);
+            } else {
+                console.error('找不到联系表单');
+            }
+            
+            // 测试API连接
+            testApiConnection();
+        }
+
+        // 测试API连接
+        async function testApiConnection() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    console.log('✅ 后端API连接正常');
+                }
+            } catch (error) {
+                console.warn('⚠️ 后端API连接异常，请确保后端正在运行');
+                showMessage('无法连接到后端服务器，请确保后端服务正在运行', 'error');
+            }
+        }
+
+        // 显示消息（已修复）
+        function showMessage(message, type = 'success') {
+            const messageDiv = document.getElementById('message');
+            if (!messageDiv) {
+                console.error('找不到消息显示区域');
+                return;
+            }
             
             messageDiv.innerHTML = `
                 <div class="message ${type}">
-                    <i class="fas fa-${iconMap[type] || 'info-circle'}"></i>
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
                     <span>${message}</span>
                 </div>
             `;
@@ -801,106 +789,11 @@
                 }
             }, 5000);
         }
-        
-        // ==================== 表单操作 ====================
-        function getFormData() {
-            const name = document.getElementById('name')?.value.trim() || '';
-            const methodItems = document.querySelectorAll('.method-item');
-            const methods = [];
-            
-            methodItems.forEach(item => {
-                const type = item.querySelector('.method-type')?.value;
-                const value = item.querySelector('.method-value')?.value.trim();
-                if (type && value) {
-                    methods.push({ type, value });
-                }
-            });
-            
-            return { name, methods };
-        }
-        
-        function resetForm() {
-            const form = safeGetElement('contactForm');
-            if (form) form.reset();
-            
-            const container = safeGetElement('methodsContainer');
-            if (container) {
-                container.innerHTML = `
-                    <div class="method-item">
-                        <select class="method-type">
-                            <option value="phone">电话</option>
-                            <option value="email">邮箱</option>
-                            <option value="address">地址</option>
-                            <option value="social">社交账号</option>
-                            <option value="other">其他</option>
-                        </select>
-                        <input type="text" class="method-value" placeholder="请输入联系方式">
-                        <button type="button" class="btn-remove-method" onclick="removeMethod(this)" style="display: none;">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-            }
-            
-            editingId = null;
-            const submitBtn = safeGetElement('submitBtn');
-            const cancelBtn = safeGetElement('cancelBtn');
-            
-            if (submitBtn) {
-                submitBtn.innerHTML = '<i class="fas fa-save"></i> 添加联系人';
-            }
-            if (cancelBtn) {
-                cancelBtn.style.display = 'none';
-            }
-        }
-        
-        function addMethod() {
-            const container = safeGetElement('methodsContainer');
-            if (!container) return;
-            
-            const methodItem = document.createElement('div');
-            methodItem.className = 'method-item';
-            methodItem.innerHTML = `
-                <select class="method-type">
-                    <option value="phone">电话</option>
-                    <option value="email">邮箱</option>
-                    <option value="address">地址</option>
-                    <option value="social">社交账号</option>
-                    <option value="other">其他</option>
-                </select>
-                <input type="text" class="method-value" placeholder="请输入联系方式">
-                <button type="button" class="btn-remove-method" onclick="removeMethod(this)">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            container.appendChild(methodItem);
-        }
-        
-        function removeMethod(button) {
-            const methodItem = button.closest('.method-item');
-            const container = safeGetElement('methodsContainer');
-            
-            if (!container || !methodItem) return;
-            
-            if (container.children.length === 1) {
-                button.style.display = 'none';
-                methodItem.querySelector('.method-type').value = 'phone';
-                methodItem.querySelector('.method-value').value = '';
-            } else {
-                methodItem.remove();
-            }
-        }
-        
-        function cancelEdit() {
-            resetForm();
-            showMessage('已取消编辑', 'info');
-        }
-        
-        // ==================== 联系人列表操作 ====================
+
+        // 加载联系人列表（已修复）
         async function loadContacts() {
             try {
-                debugLog('正在加载联系人...');
-                
+                console.log('正在加载联系人...');
                 const response = await fetch(`${API_BASE}/contacts`);
                 
                 if (!response.ok) {
@@ -908,7 +801,7 @@
                 }
                 
                 allContacts = await response.json();
-                debugLog(`加载了 ${allContacts.length} 个联系人`);
+                console.log(`加载了 ${allContacts.length} 个联系人`);
                 
                 updateStats();
                 renderContacts(allContacts);
@@ -920,12 +813,22 @@
                 renderContacts([]);
             }
         }
-        
+
+        // 渲染联系人列表（已修复）
         function renderContacts(contacts) {
-            const contactList = safeGetElement('contactList');
-            const emptyState = safeGetElement('emptyState');
+            const contactList = document.getElementById('contactList');
+            const emptyState = document.getElementById('emptyState');
             
-            if (!contactList || !emptyState) return;
+            // 安全检查
+            if (!contactList) {
+                console.error('找不到联系人列表容器');
+                return;
+            }
+            
+            if (!emptyState) {
+                console.error('找不到空状态提示');
+                return;
+            }
             
             if (contacts.length === 0) {
                 emptyState.style.display = 'block';
@@ -936,6 +839,7 @@
             
             emptyState.style.display = 'none';
             
+            // 根据筛选条件过滤
             let filteredContacts = contacts;
             if (currentFilter === 'favorites') {
                 filteredContacts = contacts.filter(c => c.is_favorite);
@@ -948,11 +852,13 @@
                 contactList.appendChild(contactDiv);
             });
         }
-        
+
+        // 创建联系人项目（新增，提高代码可读性）
         function createContactItem(contact) {
             const contactDiv = document.createElement('div');
             contactDiv.className = `contact-item ${contact.is_favorite ? 'favorite' : ''}`;
             
+            // 构建联系方式HTML
             let methodsHtml = '';
             if (contact.methods && contact.methods.length > 0) {
                 contact.methods.forEach(method => {
@@ -1002,55 +908,20 @@
             
             return contactDiv;
         }
-        
-        function updateStats() {
-            const totalContacts = allContacts.length;
-            const favoriteContacts = allContacts.filter(c => c.is_favorite).length;
-            const contactsWithPhone = allContacts.filter(c => 
-                c.methods?.some(m => m.type === 'phone')
-            ).length;
-            const contactsWithEmail = allContacts.filter(c => 
-                c.methods?.some(m => m.type === 'email')
-            ).length;
-            
-            const totalEl = safeGetElement('totalContacts');
-            const favoriteEl = safeGetElement('favoriteContacts');
-            const phoneEl = safeGetElement('contactsWithPhone');
-            const emailEl = safeGetElement('contactsWithEmail');
-            
-            if (totalEl) totalEl.textContent = totalContacts;
-            if (favoriteEl) favoriteEl.textContent = favoriteContacts;
-            if (phoneEl) phoneEl.textContent = contactsWithPhone;
-            if (emailEl) emailEl.textContent = contactsWithEmail;
-        }
-        
-        // ==================== 联系人操作 ====================
+
+        // 表单提交处理（新增）
         async function handleSubmit(e) {
             e.preventDefault();
             
-            // 防止重复提交
-            if (isSubmitting) {
-                debugLog('正在提交中，请勿重复点击');
+            const { name, methods } = getFormData();
+            if (!name) {
+                showMessage('请输入联系人姓名', 'error');
                 return;
             }
             
-            isSubmitting = true;
-            
-            const submitBtn = safeGetElement('submitBtn');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
-            submitBtn.disabled = true;
+            const contactData = { name, methods };
             
             try {
-                const { name, methods } = getFormData();
-                if (!name) {
-                    showMessage('请输入联系人姓名', 'error');
-                    return;
-                }
-                
-                const contactData = { name, methods };
-                debugLog('提交联系人数据:', contactData);
-                
                 let response;
                 if (editingId) {
                     // 更新联系人
@@ -1074,28 +945,73 @@
                     throw new Error(result.error || '操作失败');
                 }
                 
-                debugLog('后端响应:', result);
                 showMessage(editingId ? '联系人更新成功！' : '联系人添加成功！');
                 resetForm();
-                
-                // 延迟后重新加载
-                setTimeout(() => {
-                    loadContacts();
-                }, 300);
+                loadContacts();
                 
             } catch (error) {
                 console.error('提交失败:', error);
                 showMessage((editingId ? '更新' : '添加') + '联系人失败: ' + error.message, 'error');
-            } finally {
-                // 恢复按钮状态
-                setTimeout(() => {
-                    isSubmitting = false;
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                }, 1000);
             }
         }
-        
+
+        // 获取表单数据
+        function getFormData() {
+            const name = document.getElementById('name')?.value.trim() || '';
+            const methodItems = document.querySelectorAll('.method-item');
+            const methods = [];
+            
+            methodItems.forEach(item => {
+                const type = item.querySelector('.method-type')?.value;
+                const value = item.querySelector('.method-value')?.value.trim();
+                if (type && value) {
+                    methods.push({ type, value });
+                }
+            });
+            
+            return { name, methods };
+        }
+
+        // 重置表单
+        function resetForm() {
+            const form = document.getElementById('contactForm');
+            if (form) {
+                form.reset();
+            }
+            
+            // 重置联系方式输入框
+            const container = document.getElementById('methodsContainer');
+            if (container) {
+                container.innerHTML = `
+                    <div class="method-item">
+                        <select class="method-type">
+                            <option value="phone">电话</option>
+                            <option value="email">邮箱</option>
+                            <option value="address">地址</option>
+                            <option value="social">社交账号</option>
+                            <option value="other">其他</option>
+                        </select>
+                        <input type="text" class="method-value" placeholder="请输入联系方式">
+                        <button type="button" class="btn-remove-method" onclick="removeMethod(this)" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            }
+            
+            editingId = null;
+            const submitBtn = document.getElementById('submitBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> 添加联系人';
+            }
+            if (cancelBtn) {
+                cancelBtn.style.display = 'none';
+            }
+        }
+
+        // 编辑联系人（添加安全检查）
         async function editContact(id) {
             try {
                 const response = await fetch(`${API_BASE}/contacts`);
@@ -1108,13 +1024,18 @@
                 }
                 
                 editingId = id;
-                const nameInput = safeGetElement('name');
-                if (nameInput) nameInput.value = contact.name;
                 
-                const container = safeGetElement('methodsContainer');
+                const nameInput = document.getElementById('name');
+                if (nameInput) {
+                    nameInput.value = contact.name;
+                }
+                
+                // 清空现有的联系方式输入框
+                const container = document.getElementById('methodsContainer');
                 if (container) {
                     container.innerHTML = '';
                     
+                    // 添加联系方式输入框
                     if (contact.methods && contact.methods.length > 0) {
                         contact.methods.forEach((method) => {
                             const methodItem = document.createElement('div');
@@ -1135,6 +1056,7 @@
                             container.appendChild(methodItem);
                         });
                     } else {
+                        // 如果没有联系方式，添加一个空的输入框
                         const methodItem = document.createElement('div');
                         methodItem.className = 'method-item';
                         methodItem.innerHTML = `
@@ -1154,11 +1076,16 @@
                     }
                 }
                 
-                const submitBtn = safeGetElement('submitBtn');
-                const cancelBtn = safeGetElement('cancelBtn');
+                // 更新按钮文本
+                const submitBtn = document.getElementById('submitBtn');
+                const cancelBtn = document.getElementById('cancelBtn');
                 
-                if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-save"></i> 更新联系人';
-                if (cancelBtn) cancelBtn.style.display = 'flex';
+                if (submitBtn) {
+                    submitBtn.innerHTML = '<i class="fas fa-save"></i> 更新联系人';
+                }
+                if (cancelBtn) {
+                    cancelBtn.style.display = 'flex';
+                }
                 
                 showMessage(`正在编辑: ${contact.name}`, 'info');
                 
@@ -1167,158 +1094,8 @@
                 showMessage('加载联系人信息失败: ' + error.message, 'error');
             }
         }
-        
-        async function deleteContact(id) {
-            if (!confirm('确定要删除这个联系人吗？此操作不可撤销。')) {
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_BASE}/contacts/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                const result = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(result.error || '删除失败');
-                }
-                
-                showMessage('联系人删除成功！');
-                
-                // 立即从前端移除并重新加载
-                allContacts = allContacts.filter(contact => contact.id !== id);
-                renderContacts(allContacts);
-                
-                setTimeout(() => {
-                    loadContacts();
-                }, 300);
-                
-            } catch (error) {
-                console.error('删除失败:', error);
-                showMessage('删除联系人失败: ' + error.message, 'error');
-            }
-        }
-        
-        async function toggleFavorite(id) {
-            try {
-                const response = await fetch(`${API_BASE}/contacts/${id}/favorite`, {
-                    method: 'PUT'
-                });
-                
-                const result = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(result.error || '操作失败');
-                }
-                
-                showMessage(result.message);
-                
-                // 立即更新前端显示
-                const contactIndex = allContacts.findIndex(c => c.id === id);
-                if (contactIndex !== -1) {
-                    allContacts[contactIndex].is_favorite = !allContacts[contactIndex].is_favorite;
-                    renderContacts(allContacts);
-                }
-                
-                // 同时从后端重新加载
-                setTimeout(() => {
-                    loadContacts();
-                }, 300);
-                
-            } catch (error) {
-                console.error('切换收藏失败:', error);
-                showMessage('切换收藏状态失败: ' + error.message, 'error');
-            }
-        }
-        
-        // ==================== 筛选和搜索 ====================
-        function filterContacts(filter) {
-            currentFilter = filter;
-            
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            renderContacts(allContacts);
-        }
-        
-        // 搜索联系人
-        async function searchContacts() {
-            const searchInput = document.getElementById('searchInput');
-            if (!searchInput) return;
-            
-            const keyword = searchInput.value.trim();
-            console.log('搜索关键词:', keyword);
-            
-            if (!keyword) {
-                console.log('空关键词，显示所有联系人');
-                renderContacts(allContacts);
-                return;
-            }
-            
-            try {
-                console.log(`正在搜索: ${keyword}`);
-                showMessage(`正在搜索: ${keyword}`, 'info');
-                
-                const response = await fetch(`${API_BASE}/contacts/search/${encodeURIComponent(keyword)}`);
-                console.log('搜索响应状态:', response.status);
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || '搜索失败');
-                }
-                
-                const results = await response.json();
-                console.log(`搜索到 ${results.length} 个结果:`, results);
-                
-                if (results.length === 0) {
-                    showMessage(`未找到包含"${keyword}"的联系人`, 'info');
-                } else {
-                    showMessage(`找到 ${results.length} 个匹配的联系人`, 'success');
-                }
-                
-                renderContacts(results);
-                
-            } catch (error) {
-                console.error('搜索失败:', error);
-                showMessage('搜索失败: ' + error.message, 'error');
-            }
-        }
-        
-        // 测试搜索功能
-        function testSearch() {
-            // 先添加一个测试联系人
-            const testData = {
-                name: "测试搜索联系人",
-                methods: [
-                    {type: "phone", value: "1234567890"},
-                    {type: "email", value: "test@example.com"}
-                ]
-            };
-            
-            fetch(`${API_BASE}/contacts`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(testData)
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log('添加测试联系人成功:', result);
-                
-                // 搜索这个联系人
-                setTimeout(() => {
-                    document.getElementById('searchInput').value = '测试';
-                    searchContacts();
-                }, 500);
-            })
-            .catch(error => {
-                console.error('添加测试联系人失败:', error);
-            });
-        }
-        
-        // ==================== 导入导出 ====================
+
+        // 导出联系人
         async function exportContacts() {
             try {
                 showMessage('正在导出联系人，请稍候...', 'info');
@@ -1347,23 +1124,173 @@
                 showMessage('导出失败: ' + error.message, 'error');
             }
         }
-        
-        function showImportModal() {
-            const modal = safeGetElement('importModal');
-            if (modal) modal.style.display = 'flex';
+
+        // 搜索联系人
+        async function searchContacts() {
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput) return;
             
-            const fileInput = safeGetElement('importFile');
-            if (fileInput) fileInput.value = '';
+            const keyword = searchInput.value.trim();
+            
+            if (!keyword) {
+                renderContacts(allContacts);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/contacts/search/${encodeURIComponent(keyword)}`);
+                if (!response.ok) throw new Error('搜索失败');
+                
+                const results = await response.json();
+                renderContacts(results);
+                
+            } catch (error) {
+                console.error('搜索失败:', error);
+                showMessage('搜索失败: ' + error.message, 'error');
+            }
         }
-        
+
+        // 添加联系方式输入框
+        function addMethod() {
+            const container = document.getElementById('methodsContainer');
+            if (!container) return;
+            
+            const methodItem = document.createElement('div');
+            methodItem.className = 'method-item';
+            methodItem.innerHTML = `
+                <select class="method-type">
+                    <option value="phone">电话</option>
+                    <option value="email">邮箱</option>
+                    <option value="address">地址</option>
+                    <option value="social">社交账号</option>
+                    <option value="other">其他</option>
+                </select>
+                <input type="text" class="method-value" placeholder="请输入联系方式">
+                <button type="button" class="btn-remove-method" onclick="removeMethod(this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(methodItem);
+        }
+
+        // 删除联系方式输入框
+        function removeMethod(button) {
+            const methodItem = button.closest('.method-item');
+            const container = document.getElementById('methodsContainer');
+            
+            if (!container || !methodItem) return;
+            
+            if (container.children.length === 1) {
+                button.style.display = 'none';
+                methodItem.querySelector('.method-type').value = 'phone';
+                methodItem.querySelector('.method-value').value = '';
+            } else {
+                methodItem.remove();
+            }
+        }
+
+        // 取消编辑
+        function cancelEdit() {
+            resetForm();
+            showMessage('已取消编辑', 'info');
+        }
+
+        // 切换收藏状态
+        async function toggleFavorite(id) {
+            try {
+                const response = await fetch(`${API_BASE}/contacts/${id}/favorite`, {
+                    method: 'PUT'
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || '操作失败');
+                }
+                
+                showMessage(result.message);
+                loadContacts();
+                
+            } catch (error) {
+                console.error('切换收藏失败:', error);
+                showMessage('切换收藏状态失败: ' + error.message, 'error');
+            }
+        }
+
+        // 删除联系人
+        async function deleteContact(id) {
+            if (!confirm('确定要删除这个联系人吗？此操作不可撤销。')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/contacts/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || '删除失败');
+                }
+                
+                showMessage('联系人删除成功！');
+                loadContacts();
+                
+            } catch (error) {
+                console.error('删除失败:', error);
+                showMessage('删除联系人失败: ' + error.message, 'error');
+            }
+        }
+
+        // 筛选联系人
+        function filterContacts(filter) {
+            currentFilter = filter;
+            
+            // 更新按钮状态
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderContacts(allContacts);
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            const totalContacts = allContacts.length;
+            const favoriteContacts = allContacts.filter(c => c.is_favorite).length;
+            const contactsWithPhone = allContacts.filter(c => 
+                c.methods?.some(m => m.type === 'phone')
+            ).length;
+            const contactsWithEmail = allContacts.filter(c => 
+                c.methods?.some(m => m.type === 'email')
+            ).length;
+            
+            const totalEl = document.getElementById('totalContacts');
+            const favoriteEl = document.getElementById('favoriteContacts');
+            const phoneEl = document.getElementById('contactsWithPhone');
+            const emailEl = document.getElementById('contactsWithEmail');
+            
+            if (totalEl) totalEl.textContent = totalContacts;
+            if (favoriteEl) favoriteEl.textContent = favoriteContacts;
+            if (phoneEl) phoneEl.textContent = contactsWithPhone;
+            if (emailEl) emailEl.textContent = contactsWithEmail;
+        }
+
+        // 导入联系人相关函数
+        function showImportModal() {
+            document.getElementById('importModal').style.display = 'flex';
+            document.getElementById('importFile').value = '';
+        }
+
         function closeImportModal() {
-            const modal = safeGetElement('importModal');
-            if (modal) modal.style.display = 'none';
+            document.getElementById('importModal').style.display = 'none';
         }
-        
+
         async function importContacts() {
-            const fileInput = safeGetElement('importFile');
-            const file = fileInput?.files[0];
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
             
             if (!file) {
                 showMessage('请选择要导入的Excel文件', 'error');
@@ -1405,61 +1332,6 @@
                 console.error('导入失败:', error);
                 showMessage('导入失败: ' + error.message, 'error');
             }
-        }
-        
-        // ==================== 初始化 ====================
-        function initializeApp() {
-            if (eventsBound) {
-                debugLog('事件已绑定，跳过初始化');
-                return;
-            }
-            
-            debugLog('初始化应用...');
-            
-            // 绑定表单提交事件
-            const form = safeGetElement('contactForm');
-            if (form) {
-                form.removeEventListener('submit', handleSubmit);
-                form.addEventListener('submit', handleSubmit);
-                debugLog('表单事件绑定完成');
-            }
-            
-            // 加载联系人
-            loadContacts();
-            
-            // 测试API连接
-            testApiConnection();
-            
-            eventsBound = true;
-            debugLog('应用初始化完成');
-        }
-        
-        async function testApiConnection() {
-            try {
-                const response = await fetch(`${API_BASE}/health`);
-                if (response.ok) {
-                    debugLog('✅ 后端API连接正常');
-                }
-            } catch (error) {
-                console.warn('⚠️ 后端API连接异常');
-                showMessage('无法连接到后端服务器，请确保后端服务正在运行', 'error');
-            }
-        }
-        
-        // ==================== 启动应用 ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            debugLog('页面加载完成');
-            initializeApp();
-        });
-        
-        // 添加调试功能
-        if (DEBUG_MODE) {
-            window.forceRefresh = loadContacts;
-            window.showAllContacts = () => console.log(allContacts);
-            window.clearContacts = () => {
-                allContacts = [];
-                renderContacts([]);
-            };
         }
     </script>
 </body>

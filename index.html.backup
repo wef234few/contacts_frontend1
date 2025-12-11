@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>📱 智能通讯录管理系统</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         * {
             margin: 0;
@@ -561,34 +560,6 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
-
-        /* 新增样式：测试按钮 */
-        .search-box-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-
-        .test-search-btn {
-            padding: 12px 20px;
-            background: #9b59b6;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .test-search-btn:hover {
-            background: #8e44ad;
-            transform: translateY(-2px);
-        }
     </style>
 </head>
 <body>
@@ -685,15 +656,9 @@
                 <h2 class="section-title"><i class="fas fa-list"></i> 联系人列表</h2>
                 
                 <div class="controls">
-                    <div class="search-box-container">
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="搜索姓名或联系方式..." oninput="searchContacts()">
-                        </div>
-                        <!-- 在这里添加测试按钮 -->
-                        <button class="test-search-btn" onclick="testSearch()">
-                            <i class="fas fa-vial"></i> 测试搜索
-                        </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="搜索姓名或联系方式..." oninput="searchContacts()">
                     </div>
                     <div class="filter-buttons">
                         <button class="filter-btn active" onclick="filterContacts('all')">全部</button>
@@ -1245,78 +1210,47 @@
         }
         
         // 搜索联系人
-        async function searchContacts() {
-            const searchInput = document.getElementById('searchInput');
-            if (!searchInput) return;
-            
-            const keyword = searchInput.value.trim();
-            console.log('搜索关键词:', keyword);
-            
-            if (!keyword) {
-                console.log('空关键词，显示所有联系人');
-                renderContacts(allContacts);
-                return;
-            }
-            
-            try {
-                console.log(`正在搜索: ${keyword}`);
-                showMessage(`正在搜索: ${keyword}`, 'info');
-                
-                const response = await fetch(`${API_BASE}/contacts/search/${encodeURIComponent(keyword)}`);
-                console.log('搜索响应状态:', response.status);
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || '搜索失败');
-                }
-                
-                const results = await response.json();
-                console.log(`搜索到 ${results.length} 个结果:`, results);
-                
-                if (results.length === 0) {
-                    showMessage(`未找到包含"${keyword}"的联系人`, 'info');
-                } else {
-                    showMessage(`找到 ${results.length} 个匹配的联系人`, 'success');
-                }
-                
-                renderContacts(results);
-                
-            } catch (error) {
-                console.error('搜索失败:', error);
-                showMessage('搜索失败: ' + error.message, 'error');
-            }
+async function searchContacts() {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+    
+    const keyword = searchInput.value.trim();
+    console.log('搜索关键词:', keyword);
+    
+    if (!keyword) {
+        console.log('空关键词，显示所有联系人');
+        renderContacts(allContacts);
+        return;
+    }
+    
+    try {
+        console.log(`正在搜索: ${keyword}`);
+        showMessage(`正在搜索: ${keyword}`, 'info');
+        
+        const response = await fetch(`${API_BASE}/contacts/search/${encodeURIComponent(keyword)}`);
+        console.log('搜索响应状态:', response.status);
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || '搜索失败');
         }
         
-        // 测试搜索功能
-        function testSearch() {
-            // 先添加一个测试联系人
-            const testData = {
-                name: "测试搜索联系人",
-                methods: [
-                    {type: "phone", value: "1234567890"},
-                    {type: "email", value: "test@example.com"}
-                ]
-            };
-            
-            fetch(`${API_BASE}/contacts`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(testData)
-            })
-            .then(response => response.json())
-            .then(result => {
-                console.log('添加测试联系人成功:', result);
-                
-                // 搜索这个联系人
-                setTimeout(() => {
-                    document.getElementById('searchInput').value = '测试';
-                    searchContacts();
-                }, 500);
-            })
-            .catch(error => {
-                console.error('添加测试联系人失败:', error);
-            });
+        const results = await response.json();
+        console.log(`搜索到 ${results.length} 个结果:`, results);
+        
+        if (results.length === 0) {
+            showMessage(`未找到包含"${keyword}"的联系人`, 'info');
+        } else {
+            showMessage(`找到 ${results.length} 个匹配的联系人`, 'success');
         }
+        
+        renderContacts(results);
+        
+    } catch (error) {
+        console.error('搜索失败:', error);
+        showMessage('搜索失败: ' + error.message, 'error');
+    }
+}
         
         // ==================== 导入导出 ====================
         async function exportContacts() {
