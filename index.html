@@ -752,9 +752,28 @@
 
     <script>
         // ==================== 配置 ====================
-        // ==================== 配置 ====================
-const API_BASE = 'http://112.74.54.0:5000';
-const DEBUG_MODE = false;  // 生产环境设为false减少日志
+const hostname = window.location.hostname;
+const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+const isGithubPages = hostname.includes('github.io');
+
+let API_BASE;
+
+if (isGithubPages) {
+    // GitHub Pages环境 - 使用免费的CORS代理
+    const BACKEND_URL = 'http://112.74.54.0:5000';
+    // 使用 cors-anywhere 代理
+    API_BASE = `https://cors-anywhere.herokuapp.com/${BACKEND_URL}`;
+    // 或者使用其他代理
+    // API_BASE = `https://api.allorigins.win/raw?url=${encodeURIComponent(BACKEND_URL)}`;
+} else if (isLocalhost) {
+    // 本地开发环境
+    API_BASE = 'http://localhost:5000';
+} else {
+    // 其他情况
+    API_BASE = 'http://112.74.54.0:5000';
+}
+
+const DEBUG_MODE = isLocalhost;
         
         // ==================== 全局变量 ====================
         let editingId = null;
