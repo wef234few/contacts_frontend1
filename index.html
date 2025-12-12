@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📱 智能通讯录管理系统</title>
+    <title>📱 智能通讯录管理系�?/title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -543,7 +543,7 @@
             padding: 20px;
         }
 
-        /* 滚动条样式 */
+        /* 滚动条样�?*/
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -562,7 +562,7 @@
             background: #a8a8a8;
         }
 
-        /* 新增样式：测试按钮 */
+        /* 新增样式：测试按�?*/
         .search-box-container {
             display: flex;
             align-items: center;
@@ -594,11 +594,11 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-address-book"></i> 智能通讯录管理系统</h1>
+            <h1><i class="fas fa-address-book"></i> 智能通讯录管理系�?/h1>
             <p class="subtitle">支持书签收藏、多个联系方式、导入导出Excel文件</p>
         </header>
 
-        <!-- 仪表板统计 -->
+        <!-- 仪表板统�?-->
         <div class="dashboard">
             <div class="stats-card">
                 <h3><i class="fas fa-users"></i> 总联系人</h3>
@@ -606,17 +606,17 @@
                 <div class="label">所有联系人数量</div>
             </div>
             <div class="stats-card">
-                <h3><i class="fas fa-star"></i> 收藏联系人</h3>
+                <h3><i class="fas fa-star"></i> 收藏联系�?/h3>
                 <div class="number" id="favoriteContacts">0</div>
                 <div class="label">已标记为收藏</div>
             </div>
             <div class="stats-card">
-                <h3><i class="fas fa-phone"></i> 有电话的联系人</h3>
+                <h3><i class="fas fa-phone"></i> 有电话的联系�?/h3>
                 <div class="number" id="contactsWithPhone">0</div>
-                <div class="label">至少有一个电话号码</div>
+                <div class="label">至少有一个电话号�?/div>
             </div>
             <div class="stats-card">
-                <h3><i class="fas fa-envelope"></i> 有邮箱的联系人</h3>
+                <h3><i class="fas fa-envelope"></i> 有邮箱的联系�?/h3>
                 <div class="number" id="contactsWithEmail">0</div>
                 <div class="label">至少有一个邮箱地址</div>
             </div>
@@ -625,11 +625,11 @@
         <!-- 消息提示区域 -->
         <div id="message"></div>
 
-        <!-- 主内容区域 -->
+        <!-- 主内容区�?-->
         <div class="main-content">
-            <!-- 左侧：表单区域 -->
+            <!-- 左侧：表单区�?-->
             <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-user-plus"></i> 添加/编辑联系人</h2>
+                <h2 class="section-title"><i class="fas fa-user-plus"></i> 添加/编辑联系�?/h2>
                 
                 <form id="contactForm">
                     <div class="form-group">
@@ -649,7 +649,7 @@
                                     <option value="social">社交账号</option>
                                     <option value="other">其他</option>
                                 </select>
-                                <input type="text" class="method-value" placeholder="请输入联系方式">
+                                <input type="text" class="method-value" placeholder="请输入联系方�?>
                                 <button type="button" class="btn-remove-method" onclick="removeMethod(this)" style="display: none;">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -662,7 +662,7 @@
 
                     <div class="button-group">
                         <button type="submit" class="btn btn-primary" id="submitBtn">
-                            <i class="fas fa-save"></i> 添加联系人
+                            <i class="fas fa-save"></i> 添加联系�?
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="cancelEdit()" id="cancelBtn" style="display: none;">
                             <i class="fas fa-times"></i> 取消编辑
@@ -680,17 +680,17 @@
                 </div>
             </div>
 
-            <!-- 右侧：列表区域 -->
+            <!-- 右侧：列表区�?-->
             <div class="list-section">
-                <h2 class="section-title"><i class="fas fa-list"></i> 联系人列表</h2>
+                <h2 class="section-title"><i class="fas fa-list"></i> 联系人列�?/h2>
                 
                 <div class="controls">
                     <div class="search-box-container">
                         <div class="search-box">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" placeholder="搜索姓名或联系方式..." oninput="searchContacts()">
+                            <input type="text" id="searchInput" placeholder="搜索姓名或联系方�?.." oninput="searchContacts()">
                         </div>
-                        <!-- 在这里添加测试按钮 -->
+                        <!-- 在这里添加测试按�?-->
                         <button class="test-search-btn" onclick="testSearch()">
                             <i class="fas fa-vial"></i> 测试搜索
                         </button>
@@ -707,8 +707,8 @@
                     <!-- 联系人列表会动态添加到这里 -->
                     <div class="empty-state" id="emptyState">
                         <i class="fas fa-address-book"></i>
-                        <h3>暂无联系人</h3>
-                        <p>点击"添加联系人"按钮开始添加</p>
+                        <h3>暂无联系�?/h3>
+                        <p>点击"添加联系�?按钮开始添�?/p>
                     </div>
                 </div>
             </div>
@@ -718,15 +718,15 @@
         <div class="modal" id="importModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title"><i class="fas fa-file-import"></i> 从Excel导入联系人</h3>
+                    <h3 class="modal-title"><i class="fas fa-file-import"></i> 从Excel导入联系�?/h3>
                     <button class="close-modal" onclick="closeImportModal()">&times;</button>
                 </div>
                 
                 <div class="import-instructions">
-                    <p><strong>导入说明：</strong></p>
+                    <p><strong>导入说明�?/strong></p>
                     <p>1. Excel文件必须包含以下列：<strong>name</strong> (姓名)</p>
-                    <p>2. 可选列：<strong>is_favorite</strong> (收藏，0或1), <strong>phones</strong> (电话，多个用分号分隔), <strong>emails</strong> (邮箱，多个用分号分隔)</p>
-                    <p>3. 支持 .xlsx 和 .xls 格式</p>
+                    <p>2. 可选列�?strong>is_favorite</strong> (收藏�?�?), <strong>phones</strong> (电话，多个用分号分隔), <strong>emails</strong> (邮箱，多个用分号分隔)</p>
+                    <p>3. 支持 .xlsx �?.xls 格式</p>
                 </div>
 
                 <div class="file-input">
@@ -736,7 +736,7 @@
 
                 <div class="button-group">
                     <button class="btn btn-success" onclick="importContacts()">
-                        <i class="fas fa-upload"></i> 开始导入
+                        <i class="fas fa-upload"></i> 开始导�?
                     </button>
                     <button class="btn btn-secondary" onclick="closeImportModal()">
                         <i class="fas fa-times"></i> 取消
@@ -746,7 +746,7 @@
         </div>
 
         <footer>
-            <p>通讯录管理系统 &copy; 2025 | 基于 Flask + SQLite | 支持书签、多联系方式、导入导出功能</p>
+            <p>通讯录管理系�?&copy; 2025 | 基于 Flask + SQLite | 支持书签、多联系方式、导入导出功�?/p>
         </footer>
     </div>
 
@@ -762,11 +762,11 @@ if (isGithubPages) {
     // GitHub Pages环境 - 使用免费的CORS代理
     const BACKEND_URL = 'http://112.74.54.0:5000';
     // 使用 cors-anywhere 代理
-    API_BASE = `https://cors-anywhere.herokuapp.com/${BACKEND_URL}`;
-    // 或者使用其他代理
+    API_BASE = `https://api.allorigins.win/raw?url=${encodeURIComponent(BACKEND_URL)}`;
+    // 或者使用其他代�?
     // API_BASE = `https://api.allorigins.win/raw?url=${encodeURIComponent(BACKEND_URL)}`;
 } else if (isLocalhost) {
-    // 本地开发环境
+    // 本地开发环�?
     API_BASE = 'http://localhost:5000';
 } else {
     // 其他情况
@@ -792,7 +792,7 @@ const DEBUG_MODE = isLocalhost;
         function safeGetElement(id) {
             const element = document.getElementById(id);
             if (!element) {
-                console.error(`找不到元素: #${id}`);
+                console.error(`找不到元�? #${id}`);
             }
             return element;
         }
@@ -854,7 +854,7 @@ const DEBUG_MODE = isLocalhost;
                             <option value="social">社交账号</option>
                             <option value="other">其他</option>
                         </select>
-                        <input type="text" class="method-value" placeholder="请输入联系方式">
+                        <input type="text" class="method-value" placeholder="请输入联系方�?>
                         <button type="button" class="btn-remove-method" onclick="removeMethod(this)" style="display: none;">
                             <i class="fas fa-times"></i>
                         </button>
@@ -867,7 +867,7 @@ const DEBUG_MODE = isLocalhost;
             const cancelBtn = safeGetElement('cancelBtn');
             
             if (submitBtn) {
-                submitBtn.innerHTML = '<i class="fas fa-save"></i> 添加联系人';
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> 添加联系�?;
             }
             if (cancelBtn) {
                 cancelBtn.style.display = 'none';
@@ -888,7 +888,7 @@ const DEBUG_MODE = isLocalhost;
                     <option value="social">社交账号</option>
                     <option value="other">其他</option>
                 </select>
-                <input type="text" class="method-value" placeholder="请输入联系方式">
+                <input type="text" class="method-value" placeholder="请输入联系方�?>
                 <button type="button" class="btn-remove-method" onclick="removeMethod(this)">
                     <i class="fas fa-times"></i>
                 </button>
@@ -913,13 +913,13 @@ const DEBUG_MODE = isLocalhost;
         
         function cancelEdit() {
             resetForm();
-            showMessage('已取消编辑', 'info');
+            showMessage('已取消编�?, 'info');
         }
         
-        // ==================== 联系人列表操作 ====================
+        // ==================== 联系人列表操�?====================
         async function loadContacts() {
             try {
-                debugLog('正在加载联系人...');
+                debugLog('正在加载联系�?..');
                 
                 const response = await fetch(`${API_BASE}/contacts`);
                 
@@ -928,14 +928,14 @@ const DEBUG_MODE = isLocalhost;
                 }
                 
                 allContacts = await response.json();
-                debugLog(`加载了 ${allContacts.length} 个联系人`);
+                debugLog(`加载�?${allContacts.length} 个联系人`);
                 
                 updateStats();
                 renderContacts(allContacts);
                 
             } catch (error) {
-                console.error('加载联系人失败:', error);
-                showMessage('加载联系人失败: ' + error.message, 'error');
+                console.error('加载联系人失�?', error);
+                showMessage('加载联系人失�? ' + error.message, 'error');
                 allContacts = [];
                 renderContacts([]);
             }
@@ -1044,7 +1044,7 @@ const DEBUG_MODE = isLocalhost;
             if (emailEl) emailEl.textContent = contactsWithEmail;
         }
         
-        // ==================== 联系人操作 ====================
+        // ==================== 联系人操�?====================
         async function handleSubmit(e) {
             e.preventDefault();
             
@@ -1058,7 +1058,7 @@ const DEBUG_MODE = isLocalhost;
             
             const submitBtn = safeGetElement('submitBtn');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理�?..';
             submitBtn.disabled = true;
             
             try {
@@ -1069,18 +1069,18 @@ const DEBUG_MODE = isLocalhost;
                 }
                 
                 const contactData = { name, methods };
-                debugLog('提交联系人数据:', contactData);
+                debugLog('提交联系人数�?', contactData);
                 
                 let response;
                 if (editingId) {
-                    // 更新联系人
+                    // 更新联系�?
                     response = await fetch(`${API_BASE}/contacts/${editingId}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(contactData)
                     });
                 } else {
-                    // 添加联系人
+                    // 添加联系�?
                     response = await fetch(`${API_BASE}/contacts`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1098,16 +1098,16 @@ const DEBUG_MODE = isLocalhost;
                 showMessage(editingId ? '联系人更新成功！' : '联系人添加成功！');
                 resetForm();
                 
-                // 延迟后重新加载
+                // 延迟后重新加�?
                 setTimeout(() => {
                     loadContacts();
                 }, 300);
                 
             } catch (error) {
                 console.error('提交失败:', error);
-                showMessage((editingId ? '更新' : '添加') + '联系人失败: ' + error.message, 'error');
+                showMessage((editingId ? '更新' : '添加') + '联系人失�? ' + error.message, 'error');
             } finally {
-                // 恢复按钮状态
+                // 恢复按钮状�?
                 setTimeout(() => {
                     isSubmitting = false;
                     submitBtn.disabled = false;
@@ -1147,7 +1147,7 @@ const DEBUG_MODE = isLocalhost;
                                     <option value="social" ${method.type === 'social' ? 'selected' : ''}>社交账号</option>
                                     <option value="other" ${method.type === 'other' ? 'selected' : ''}>其他</option>
                                 </select>
-                                <input type="text" class="method-value" placeholder="请输入联系方式" value="${method.value}">
+                                <input type="text" class="method-value" placeholder="请输入联系方�? value="${method.value}">
                                 <button type="button" class="btn-remove-method" onclick="removeMethod(this)">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -1165,7 +1165,7 @@ const DEBUG_MODE = isLocalhost;
                                 <option value="social">社交账号</option>
                                 <option value="other">其他</option>
                             </select>
-                            <input type="text" class="method-value" placeholder="请输入联系方式">
+                            <input type="text" class="method-value" placeholder="请输入联系方�?>
                             <button type="button" class="btn-remove-method" onclick="removeMethod(this)" style="display: none;">
                                 <i class="fas fa-times"></i>
                             </button>
@@ -1177,19 +1177,19 @@ const DEBUG_MODE = isLocalhost;
                 const submitBtn = safeGetElement('submitBtn');
                 const cancelBtn = safeGetElement('cancelBtn');
                 
-                if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-save"></i> 更新联系人';
+                if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-save"></i> 更新联系�?;
                 if (cancelBtn) cancelBtn.style.display = 'flex';
                 
                 showMessage(`正在编辑: ${contact.name}`, 'info');
                 
             } catch (error) {
                 console.error('编辑失败:', error);
-                showMessage('加载联系人信息失败: ' + error.message, 'error');
+                showMessage('加载联系人信息失�? ' + error.message, 'error');
             }
         }
         
         async function deleteContact(id) {
-            if (!confirm('确定要删除这个联系人吗？此操作不可撤销。')) {
+            if (!confirm('确定要删除这个联系人吗？此操作不可撤销�?)) {
                 return;
             }
             
@@ -1216,7 +1216,7 @@ const DEBUG_MODE = isLocalhost;
                 
             } catch (error) {
                 console.error('删除失败:', error);
-                showMessage('删除联系人失败: ' + error.message, 'error');
+                showMessage('删除联系人失�? ' + error.message, 'error');
             }
         }
         
@@ -1241,14 +1241,14 @@ const DEBUG_MODE = isLocalhost;
                     renderContacts(allContacts);
                 }
                 
-                // 同时从后端重新加载
+                // 同时从后端重新加�?
                 setTimeout(() => {
                     loadContacts();
                 }, 300);
                 
             } catch (error) {
                 console.error('切换收藏失败:', error);
-                showMessage('切换收藏状态失败: ' + error.message, 'error');
+                showMessage('切换收藏状态失�? ' + error.message, 'error');
             }
         }
         
@@ -1264,13 +1264,13 @@ const DEBUG_MODE = isLocalhost;
             renderContacts(allContacts);
         }
         
-        // 搜索联系人
+        // 搜索联系�?
         async function searchContacts() {
             const searchInput = document.getElementById('searchInput');
             if (!searchInput) return;
             
             const keyword = searchInput.value.trim();
-            console.log('搜索关键词:', keyword);
+            console.log('搜索关键�?', keyword);
             
             if (!keyword) {
                 console.log('空关键词，显示所有联系人');
@@ -1283,7 +1283,7 @@ const DEBUG_MODE = isLocalhost;
                 showMessage(`正在搜索: ${keyword}`, 'info');
                 
                 const response = await fetch(`${API_BASE}/contacts/search/${encodeURIComponent(keyword)}`);
-                console.log('搜索响应状态:', response.status);
+                console.log('搜索响应状�?', response.status);
                 
                 if (!response.ok) {
                     const error = await response.json();
@@ -1291,10 +1291,10 @@ const DEBUG_MODE = isLocalhost;
                 }
                 
                 const results = await response.json();
-                console.log(`搜索到 ${results.length} 个结果:`, results);
+                console.log(`搜索�?${results.length} 个结�?`, results);
                 
                 if (results.length === 0) {
-                    showMessage(`未找到包含"${keyword}"的联系人`, 'info');
+                    showMessage(`未找到包�?${keyword}"的联系人`, 'info');
                 } else {
                     showMessage(`找到 ${results.length} 个匹配的联系人`, 'success');
                 }
@@ -1311,7 +1311,7 @@ const DEBUG_MODE = isLocalhost;
         function testSearch() {
             // 先添加一个测试联系人
             const testData = {
-                name: "测试搜索联系人",
+                name: "测试搜索联系�?,
                 methods: [
                     {type: "phone", value: "1234567890"},
                     {type: "email", value: "test@example.com"}
@@ -1325,23 +1325,23 @@ const DEBUG_MODE = isLocalhost;
             })
             .then(response => response.json())
             .then(result => {
-                console.log('添加测试联系人成功:', result);
+                console.log('添加测试联系人成�?', result);
                 
-                // 搜索这个联系人
+                // 搜索这个联系�?
                 setTimeout(() => {
                     document.getElementById('searchInput').value = '测试';
                     searchContacts();
                 }, 500);
             })
             .catch(error => {
-                console.error('添加测试联系人失败:', error);
+                console.error('添加测试联系人失�?', error);
             });
         }
         
         // ==================== 导入导出 ====================
         async function exportContacts() {
             try {
-                showMessage('正在导出联系人，请稍候...', 'info');
+                showMessage('正在导出联系人，请稍�?..', 'info');
                 
                 const response = await fetch(`${API_BASE}/contacts/export`);
                 
@@ -1354,7 +1354,7 @@ const DEBUG_MODE = isLocalhost;
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = '通讯录.xlsx';
+                a.download = '通讯�?xlsx';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -1391,7 +1391,7 @@ const DEBUG_MODE = isLocalhost;
             }
             
             if (!file.name.match(/\.(xlsx|xls)$/i)) {
-                showMessage('请选择Excel文件 (.xlsx 或 .xls)', 'error');
+                showMessage('请选择Excel文件 (.xlsx �?.xls)', 'error');
                 return;
             }
             
@@ -1399,7 +1399,7 @@ const DEBUG_MODE = isLocalhost;
             formData.append('file', file);
             
             try {
-                showMessage('正在导入联系人，请稍候...', 'info');
+                showMessage('正在导入联系人，请稍�?..', 'info');
                 
                 const response = await fetch(`${API_BASE}/contacts/import`, {
                     method: 'POST',
@@ -1414,7 +1414,7 @@ const DEBUG_MODE = isLocalhost;
                 
                 let message = result.message;
                 if (result.errors && result.errors.length > 0) {
-                    message += `<br>错误详情：${result.errors.join('; ')}`;
+                    message += `<br>错误详情�?{result.errors.join('; ')}`;
                 }
                 
                 showMessage(message, result.error_count > 0 ? 'error' : 'success');
@@ -1427,14 +1427,14 @@ const DEBUG_MODE = isLocalhost;
             }
         }
         
-        // ==================== 初始化 ====================
+        // ==================== 初始�?====================
         function initializeApp() {
             if (eventsBound) {
-                debugLog('事件已绑定，跳过初始化');
+                debugLog('事件已绑定，跳过初始�?);
                 return;
             }
             
-            debugLog('初始化应用...');
+            debugLog('初始化应�?..');
             
             // 绑定表单提交事件
             const form = safeGetElement('contactForm');
@@ -1444,21 +1444,21 @@ const DEBUG_MODE = isLocalhost;
                 debugLog('表单事件绑定完成');
             }
             
-            // 加载联系人
+            // 加载联系�?
             loadContacts();
             
             // 测试API连接
             testApiConnection();
             
             eventsBound = true;
-            debugLog('应用初始化完成');
+            debugLog('应用初始化完�?);
         }
         
         async function testApiConnection() {
             try {
                 const response = await fetch(`${API_BASE}/health`);
                 if (response.ok) {
-                    debugLog('✅ 后端API连接正常');
+                    debugLog('�?后端API连接正常');
                 }
             } catch (error) {
                 console.warn('⚠️ 后端API连接异常');
@@ -1484,3 +1484,6 @@ const DEBUG_MODE = isLocalhost;
     </script>
 </body>
 </html>
+
+
+
